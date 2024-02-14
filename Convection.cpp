@@ -12,12 +12,24 @@ vector<double> error(vector<double>,vector<double>);
 void create(string,vector<double>,vector<double>,int);
 
 int main(){
-int n, order, gc;
-
+int n, order, gc, i,i_tot;
+double x_low,x_high,cfl,dt,dx;
+vector<double> x;
 // *** INPUTS ***
-n = 1000; // Number of Cells
-order = 2;
+n = 1000;     // Number of Cells
+order = 2;    // Order of Accuracy
+gc = order/2; // Find Number of GC
 
+x_low = 0, x_high = 6.28318531; // Range
+cfl = 0.01;
+dt = 1.0/n*cfl; // Timestep
+i_tot = 1000; // Total Number of Iterations
+// ***** Create Mesh *****
+	dx = (x_high - x_low)/(n-1);
+	
+	for ( i = 0; i < n + 2*gc; i++) {
+		x[i] = x_low - gc*dx + i*dx; 
+	}
 
 return 0;
 
