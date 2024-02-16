@@ -15,17 +15,17 @@ void create(string,vector<double>,vector<double>,int);
 
 int main(){
 	
-	int n, order, gc, i,i_max;
+	int n, order, gc, i,i_max,j;
 	double x_low,x_high,cfl,dt,dx;
 	
 	// *** INPUTS ***
-	n = 10;                         // Number of Cells
-	order = 2;                      // Order of Accuracy
+	n = 1000;                         // Number of Cells
+	order = 6;                      // Order of Accuracy
 	gc = order/2;                   // Find Number of GC
 	x_low = 0, x_high = 6.28318531; // Range
 	cfl = 0.1;						// cfl
 	dt = 1.0/n*cfl;                 // Timestep
-	i_max = 1000;                   // Total Number of Iterations
+	i_max = 40000;                   // Total Number of Iterations
 
 
 	// ***** Define Mesh *****
@@ -47,6 +47,7 @@ int main(){
 		string filename = "Iter_";
 
 	// Solve
+		j = 0;
 		for (int iter = 0; iter < i_max; iter++){
 			
 			dudx = DDx(u,&dx,&gc,&n,order);
@@ -57,12 +58,31 @@ int main(){
 			}
 			u = fill_gc(u,gc,n);
 
-			if (iter%10 == 0){
-				string s = to_string(iter);
+			if (iter%40 == 0){
+				
+				string s = to_string(j);
+				if (j < 10) {
+					s.insert(0,1,'0');
+					s.insert(0,1,'0');
+					s.insert(0,1,'0');
+					s.insert(0,1,'0');
+				}else if (j<100){
+					s.insert(0,1,'0');
+					s.insert(0,1,'0');
+					s.insert(0,1,'0');
+				}
+				else if (j<1000){
+					s.insert(0,1,'0');
+					s.insert(0,1,'0');
+				}
+				else if (j<10000){
+					s.insert(0,1,'0');
+				}
 				filename = "Iter_";
 				filename.append(s);
 				filename.append(".csv");
 				create(filename,x,u,n);
+				j = j + 1;
 			}
 			
 			
