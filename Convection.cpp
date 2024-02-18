@@ -17,16 +17,16 @@ int main(){
 	
 	int n, order, gc, i,i_max,j;
 	double x_low,x_high,cfl,dt,dx;
-	
+	string type;
 	// *** INPUTS ***
-	n = 1000;                         // Number of Cells
-	order = 6;                      // Order of Accuracy
+	n = 10;                         // Number of Cells
+	order = 4;                      // Order of Accuracy
 	gc = order/2;                   // Find Number of GC
 	x_low = 0, x_high = 6.28318531; // Range
-	cfl = 0.1;						// cfl
+	cfl = 0.01;						// cfl
 	dt = 1.0/n*cfl;                 // Timestep
-	i_max = 40000;                   // Total Number of Iterations
-
+	i_max = 80000;                   // Total Number of Iterations
+	type = "nonlinear_convective";
 
 	// ***** Define Mesh *****
 	dx = (x_high - x_low)/n;
@@ -53,14 +53,20 @@ int main(){
 			dudx = DDx(u,&dx,&gc,&n,order);
 
 			for ( i = 0; i < n + 2*gc; i++){
-				unew[i] = u[i] - dt*dudx[i];
-				u[i] = unew[i];
+				if(type =="linear_convective"){
+					unew[i] = u[i] - dt*dudx[i];
+					u[i] = unew[i];
+				} else if(type =="nonlinear_convective"){
+					unew[i] = u[i] - u[i]*dt*dudx[i];
+					u[i] = unew[i];
+				}
+				
 			}
 			u = fill_gc(u,gc,n);
 
-			if (iter%40 == 0){
+			if (iter%80 == 0){         //Taking snapshots of runs
 				
-				string s = to_string(j);
+				string s = to_string(j);   // Organizing files names so matlab can read them in order
 				if (j < 10) {
 					s.insert(0,1,'0');
 					s.insert(0,1,'0');
