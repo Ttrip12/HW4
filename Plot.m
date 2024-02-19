@@ -11,7 +11,7 @@ for i = 3:num_files
    data{i-2} = readmatrix(file);
 end
 cd ..
-v = VideoWriter('10_fourth_order_nonlin.mj2', 'Motion JPEG 2000');
+v = VideoWriter('test.mj2', 'Motion JPEG 2000');
 v.LosslessCompression = true;
 v.FrameRate = 60;  % arbitrary
 open(v)

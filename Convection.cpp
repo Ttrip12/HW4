@@ -5,6 +5,7 @@
 #include <vector>
 #include <filesystem>
 
+
 using namespace std;
 
 vector<double> DDx(vector<double>, double *, int *,int *,int);
@@ -12,21 +13,48 @@ vector<double> DDxDDx(vector<double>, double *, int *,int *,int);
 vector<double> fill_gc(vector<double>, int,int);
 vector<double> error(vector<double>,vector<double>);
 void create(string,vector<double>,vector<double>,int);
-
+//void read_input(string)
 int main(){
 	
 	int n, order, gc, i,i_max,j;
 	double x_low,x_high,cfl,dt,dx;
 	string type;
+	ifstream input;
 	// *** INPUTS ***
-	n = 10;                         // Number of Cells
-	order = 4;                      // Order of Accuracy
-	gc = order/2;                   // Find Number of GC
-	x_low = 0, x_high = 6.28318531; // Range
-	cfl = 0.01;						// cfl
+	input.open("Input.txt", ios::in);
+	string line;
+
+		while (getline(input,line)) {
+			getline(input,line);
+			if(line.find("#") == 0) {
+				continue;
+			}
+			input >> n;
+			cout << n << endl;
+			input >> order;
+			cout << order << endl;
+			input >> x_low;
+			cout << x_low << endl;
+			input >> x_high;
+			input >> cfl;
+			input >> i_max;
+			input >> type;
+			cout << type;
+			
+			if (input.eof()){
+				break;
+			}
+			
+		}
+	
+	// n = 100;                        // Number of Cells
+	// order = 6;                      // Order of Accuracy
+	gc = order/2;                  // Find Number of GC
+	//x_low = 0, x_high = 6.28318531; // Range
+	//cfl = 0.01;						// cfl
 	dt = 1.0/n*cfl;                 // Timestep
-	i_max = 80000;                   // Total Number of Iterations
-	type = "nonlinear_convective";
+	//i_max = 80000;                  // Total Number of Iterations
+	//type = "linear_convective";
 
 	// ***** Define Mesh *****
 	dx = (x_high - x_low)/n;
