@@ -24,22 +24,19 @@ int main(){
 	input.open("Input.txt", ios::in);
 	string line;
 
-		while (getline(input,line)) {
-			getline(input,line);
-			if(line.find("#") == 0) {
-				continue;
-			}
+		//while (getline(input,line)) {
+		while (1){
+			// getline(input,line);
+			// if(line.find("#") == 0) {
+			// 	continue;
+			// }
 			input >> n;
-			cout << n << endl;
 			input >> order;
-			cout << order << endl;
 			input >> x_low;
-			cout << x_low << endl;
 			input >> x_high;
 			input >> cfl;
 			input >> i_max;
 			input >> type;
-			cout << type;
 			
 			if (input.eof()){
 				break;
@@ -49,7 +46,7 @@ int main(){
 	
 	// n = 100;                        // Number of Cells
 	// order = 6;                      // Order of Accuracy
-	gc = order/2;                  // Find Number of GC
+	gc = order/2;		               // Find Number of GC
 	//x_low = 0, x_high = 6.28318531; // Range
 	//cfl = 0.01;						// cfl
 	dt = 1.0/n*cfl;                 // Timestep
@@ -65,17 +62,18 @@ int main(){
 		for ( i = 0; i < n + 2*gc; i++) {
 			
 			x[i] = x_low - gc*dx + i*dx + dx/2; 
-			u[i] = sin(x[i]) + 2;
-
+			u[i] = sin(3.14159*x[i]) + 2;
 		}
 		
 		// Create sub directory for csv
+		std::filesystem::remove_all("Data");
 		std::filesystem::create_directory("Data");
 		std::filesystem::current_path("Data");
 		string filename = "Iter_";
 
 	// Solve
 		j = 0;
+		int num = i_max/1000;
 		for (int iter = 0; iter < i_max; iter++){
 			
 			dudx = DDx(u,&dx,&gc,&n,order);
@@ -92,7 +90,7 @@ int main(){
 			}
 			u = fill_gc(u,gc,n);
 
-			if (iter%80 == 0){         //Taking snapshots of runs
+			if (iter%num == 0){         //Taking snapshots of runs
 				
 				string s = to_string(j);   // Organizing files names so matlab can read them in order
 				if (j < 10) {
@@ -115,7 +113,7 @@ int main(){
 				filename = "Iter_";
 				filename.append(s);
 				filename.append(".csv");
-				create(filename,x,u,n);
+				create(filename,x,u,n+2*gc);
 				j = j + 1;
 			}
 			
@@ -123,7 +121,7 @@ int main(){
 
 		}
 
-
+	system("matlab_script.sh");
 	return 0;
 
 }
@@ -190,8 +188,8 @@ vector<double> fill_gc(vector<double> A, int gc,int n){
 	
 	int sz = n + 2*gc;
 	for(int i = 0; i < gc; i++){
-		A[i] = A[n - 1 + i];
-		A[sz - i - 1] = A[2*gc - i];
+		A[i] = A[n + i];
+		A[sz - i - 1] = A[2*gc - i - 1];
 	}	 
  
 	return A;

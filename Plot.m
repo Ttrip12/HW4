@@ -22,7 +22,7 @@ for i=1:num_files - 2
     plot(data{i}(:,1), data{i}(:,2));
     plot_name = "Frame" + i;
     title(plot_name)
-    xlim([0 2*pi])
+    xlim([0 2])
     ylim([0.5 3.5])
     data{i}(:,1);
     im = getframe(f);
@@ -30,4 +30,4 @@ for i=1:num_files - 2
 end
 close(v)
 
-
+exit
