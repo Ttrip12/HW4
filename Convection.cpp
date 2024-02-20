@@ -4,16 +4,18 @@
 #include <string>
 #include <vector>
 #include <filesystem>
-
+#include <algorithm>
+#include <chrono>
 
 using namespace std;
+std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
 vector<double> DDx(vector<double>, double *, int *,int *,int);
 vector<double> DDxDDx(vector<double>, double *, int *,int *,int);
 vector<double> fill_gc(vector<double>, int,int);
 vector<double> error(vector<double>,vector<double>);
+double find_dt(vector<double>,double,double);
 void create(string,vector<double>,vector<double>,int);
-//void read_input(string)
 int main(){
 	
 	int n, order, gc, i,i_max,j;
@@ -78,16 +80,22 @@ int main(){
 			
 			dudx = DDx(u,&dx,&gc,&n,order);
 
-			for ( i = 0; i < n + 2*gc; i++){
 				if(type =="linear_convective"){
-					unew[i] = u[i] - dt*dudx[i];
-					u[i] = unew[i];
+					for ( i = 0; i < n + 2*gc; i++){
+						unew[i] = u[i] - dt*dudx[i];
+						u[i] = unew[i];
+					}
+					
 				} else if(type =="nonlinear_convective"){
-					unew[i] = u[i] - u[i]*dt*dudx[i];
-					u[i] = unew[i];
+					
+					dt =  find_dt(u,dx,cfl);
+					for ( i = 0; i < n + 2*gc; i++){
+						unew[i] = u[i] - u[i]*dt*dudx[i];
+						u[i] = unew[i];
+					}
+
+
 				}
-				
-			}
 			u = fill_gc(u,gc,n);
 
 			if (iter%num == 0){         //Taking snapshots of runs
@@ -97,17 +105,11 @@ int main(){
 					s.insert(0,1,'0');
 					s.insert(0,1,'0');
 					s.insert(0,1,'0');
-					s.insert(0,1,'0');
 				}else if (j<100){
-					s.insert(0,1,'0');
 					s.insert(0,1,'0');
 					s.insert(0,1,'0');
 				}
 				else if (j<1000){
-					s.insert(0,1,'0');
-					s.insert(0,1,'0');
-				}
-				else if (j<10000){
 					s.insert(0,1,'0');
 				}
 				filename = "Iter_";
@@ -120,8 +122,15 @@ int main(){
 			
 
 		}
-
-	system("matlab_script.sh");
+		std::filesystem::current_path("..");
+		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+		double time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+		cout << "Time Elapsed = " << time_elapsed << "[ms]" << endl;
+		string file = "out.csv";
+		fstream fout;
+		fout.open(file, ios::out | ios::app);
+		fout << time_elapsed << ",";
+	
 	return 0;
 
 }
@@ -203,6 +212,15 @@ vector<double> error(vector<double> Numer,vector<double> Exact){
 		error[i] = abs(Numer[i] - Exact[i]);
 	}
 	return error;
+}
+
+double find_dt(vector<double> u,double dx,double cfl) {
+	
+	double u_max = *max_element(u.begin(),u.end());
+
+	double dt = dx*cfl/u_max;
+
+	return dt;
 }
 
 void create(string file, vector<double> x, vector<double> y,int n) 
