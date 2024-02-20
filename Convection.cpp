@@ -37,7 +37,6 @@ int main(){
 			input >> x_low;
 			input >> x_high;
 			input >> cfl;
-			input >> i_max;
 			input >> type;
 			
 			if (input.eof()){
@@ -52,7 +51,7 @@ int main(){
 	//x_low = 0, x_high = 6.28318531; // Range
 	//cfl = 0.01;						// cfl
 	dt = 1.0/n*cfl;                 // Timestep
-	//i_max = 80000;                  // Total Number of Iterations
+	i_max = n*40;                  // Total Number of Iterations
 	//type = "linear_convective";
 
 	// ***** Define Mesh *****
@@ -64,7 +63,7 @@ int main(){
 		for ( i = 0; i < n + 2*gc; i++) {
 			
 			x[i] = x_low - gc*dx + i*dx + dx/2; 
-			u[i] = sin(3.14159*x[i]) + 2;
+			u[i] = sin(x[i]) + 2;
 		}
 		
 		// Create sub directory for csv
