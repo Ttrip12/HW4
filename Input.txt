@@ -1,6 +1,6 @@
-1000
+10
 6
 0
 6.283185
-0.01
-nonlinear_convective
+0.7
+linear_convective

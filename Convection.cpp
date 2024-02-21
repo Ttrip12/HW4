@@ -97,7 +97,7 @@ int main(){
 				}
 			u = fill_gc(u,gc,n);
 
-			if (iter%num == 0){         //Taking snapshots of runs
+			if (iter%1 == 0){         //Taking snapshots of runs
 				
 				string s = to_string(j);   // Organizing files names so matlab can read them in order
 				if (j < 10) {
