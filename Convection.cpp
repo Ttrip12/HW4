@@ -19,7 +19,7 @@ void create(string,vector<double>,vector<double>,int);
 int main(){
 	
 	int n, order, gc, i,i_max,j;
-	double x_low,x_high,cfl,dt,dx;
+	double x_low,x_high,cfl,dt,dx,nu;
 	string type;
 	ifstream input;
 	// *** INPUTS ***
@@ -92,8 +92,16 @@ int main(){
 						unew[i] = u[i] - u[i]*dt*dudx[i];
 						u[i] = unew[i];
 					}
-
-
+				} else if (type == "burger"){
+					
+					vector<double> d2u_d2x = DDx(dudx,&dx,&gc,&n,order);
+					
+					dt =  find_dt(u,dx,cfl);
+					nu = 0.1;
+					for ( i = 0; i < n + 2*gc; i++){
+						unew[i] = u[i] - u[i]*dt*nu*d2u_d2x[i];
+						u[i] = unew[i];
+					}
 				}
 			u = fill_gc(u,gc,n);
 
