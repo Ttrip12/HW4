@@ -1,6 +1,7 @@
-10
-6
+100
+2
 0
 6.283185
-0.7
-linear_convective
+0.05
+burger
+0.1

@@ -38,7 +38,7 @@ int main(){
 			input >> x_high;
 			input >> cfl;
 			input >> type;
-			
+			input >> nu;
 			if (input.eof()){
 				break;
 			}
@@ -57,13 +57,18 @@ int main(){
 	// ***** Define Mesh *****
 	dx = (x_high - x_low)/n;
 
-	vector<double> u(n + 2*gc), unew(n + 2*gc), x(n + 2*gc),dudx(n + 2*gc);
+	vector<double> u(n + 2*gc), unew(n + 2*gc), x(n + 2*gc),dudx(n + 2*gc),d2u_d2x(n + 2*gc);
 	// ***** Initial Conditions *****	
 		
 		for ( i = 0; i < n + 2*gc; i++) {
 			
 			x[i] = x_low - gc*dx + i*dx + dx/2; 
-			u[i] = sin(x[i]) + 2;
+			if (i<(n + 2*gc)/2){
+				u[i] = x[i]; 
+			}else{
+				u[i] = -x[i];
+			} 
+			
 		}
 		
 		// Create sub directory for csv
@@ -78,14 +83,16 @@ int main(){
 		for (int iter = 0; iter < i_max; iter++){
 			
 			dudx = DDx(u,&dx,&gc,&n,order);
+			d2u_d2x = DDxDDx(u,&dx,&gc,&n,order);
 
-				if(type =="linear_convective"){
+
+				if(type == "linear_convective"){
 					for ( i = 0; i < n + 2*gc; i++){
 						unew[i] = u[i] - dt*dudx[i];
 						u[i] = unew[i];
 					}
 					
-				} else if(type =="nonlinear_convective"){
+				} else if(type == "nonlinear_convective"){
 					
 					dt =  find_dt(u,dx,cfl);
 					for ( i = 0; i < n + 2*gc; i++){
@@ -93,19 +100,15 @@ int main(){
 						u[i] = unew[i];
 					}
 				} else if (type == "burger"){
-					
-					vector<double> d2u_d2x = DDx(dudx,&dx,&gc,&n,order);
-					
 					dt =  find_dt(u,dx,cfl);
-					nu = 0.1;
 					for ( i = 0; i < n + 2*gc; i++){
-						unew[i] = u[i] - u[i]*dt*nu*d2u_d2x[i];
+						unew[i] = u[i] - dt*(u[i])*dudx[i] + dt*nu*d2u_d2x[i];
 						u[i] = unew[i];
 					}
 				}
 			u = fill_gc(u,gc,n);
 
-			if (iter%1 == 0){         //Taking snapshots of runs
+			if (iter%num == 0){         //Taking snapshots of runs
 				
 				string s = to_string(j);   // Organizing files names so matlab can read them in order
 				if (j < 10) {

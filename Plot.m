@@ -12,7 +12,7 @@ for i = 3:num_files
 end
 %% Video
 cd ..
-v = VideoWriter('04_10N_O6_C0_7_lin.mp4', 'MPEG-4');
+v = VideoWriter('Borgir.mp4', 'MPEG-4');
 %v.LosslessCompression = true;
 v.FrameRate = 60;  % arbitrary
 open(v)
@@ -26,7 +26,7 @@ for i=1:num_files - 2
     xlim([0 2*pi])
     xticks([0 pi 2*pi]);
     xticklabels({'0','\pi','2\pi'});
-    %ylim([0.5 3.5])
+    %ylim([0 3.5])
     xlabel("X")
     ylabel("Velocity")
     data{i}(:,1);
