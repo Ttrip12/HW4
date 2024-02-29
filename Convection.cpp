@@ -45,28 +45,30 @@ int main(){
 			
 		}
 	
-	// n = 100;                        // Number of Cells
-	// order = 6;                      // Order of Accuracy
-	gc = order/2;		               // Find Number of GC
-	//x_low = 0, x_high = 6.28318531; // Range
-	//cfl = 0.01;						// cfl
+	gc = order/2;		            // Find Number of GC
 	dt = 1.0/n*cfl;                 // Timestep
-	i_max = n*40;                  // Total Number of Iterations
-	//type = "linear_convective";
+	i_max = n*40;                   // Total Number of Iterations
 
 	// ***** Define Mesh *****
 	dx = (x_high - x_low)/n;
 
-	vector<double> u(n + 2*gc), unew(n + 2*gc), x(n + 2*gc),dudx(n + 2*gc),d2u_d2x(n + 2*gc);
+	vector<double> u(n + 2*gc), unew(n + 2*gc), x(n + 2*gc), dudx(n + 2*gc), d2u_d2x(n + 2*gc);
 	// ***** Initial Conditions *****	
 		
 		for ( i = 0; i < n + 2*gc; i++) {
 			
-			x[i] = x_low - gc*dx + i*dx + dx/2; 
-			//if (i<(n + 2*gc)/2){
-				u[i] = 0.1*x[i]*x[i]; 
-			//} 
+			x[i] = (x_low - gc*dx + i*dx + dx/2)*3.14159; 
 			
+			// u[i] = sin(x[i])+2;
+			
+			// if (i<(n + 2*gc)/2){
+			// 	u[i] = 0.5*x[i]*x[i]; 
+			// } else u[i] = u[i-1];
+			
+			//if (i<(n + 2*gc)/2){
+				u[i] = x[i]; 
+			//} else u[i] = u[((n + 2*gc)/2)-1] - x[n + 2*gc - i];
+
 		}
 		
 		// Create sub directory for csv
@@ -83,8 +85,8 @@ int main(){
 			dudx = DDx(u,&dx,&gc,&n,order);
 			d2u_d2x = DDxDDx(u,&dx,&gc,&n,order);
 
-
 				if(type == "linear_convective"){
+					
 					for ( i = 0; i < n + 2*gc; i++){
 						unew[i] = u[i] - dt*dudx[i];
 						u[i] = unew[i];
@@ -97,13 +99,15 @@ int main(){
 						unew[i] = u[i] - u[i]*dt*dudx[i];
 						u[i] = unew[i];
 					}
+
 				} else if (type == "burger"){
 					dt =  find_dt(u,dx,cfl);
 					for ( i = 0; i < n + 2*gc; i++){
-						unew[i] = u[i] - dt*(u[i])*dudx[i] + dt*nu*d2u_d2x[i];
+						unew[i] = u[i] - dt*u[i]*dudx[i] + dt*nu*d2u_d2x[i];
 						u[i] = unew[i];
 					}
 				}
+
 			u = fill_gc(u,gc,n);
 
 			if (iter%num == 0){         //Taking snapshots of runs
@@ -120,6 +124,7 @@ int main(){
 				else if (j<1000){
 					s.insert(0,1,'0');
 				}
+
 				filename = "Iter_";
 				filename.append(s);
 				filename.append(".csv");
@@ -127,9 +132,8 @@ int main(){
 				j = j + 1;
 			}
 			
-			
-
 		}
+
 		std::filesystem::current_path("..");
 		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 		double time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -230,6 +234,7 @@ double find_dt(vector<double> u,double dx,double cfl) {
 
 	return dt;
 }
+
 
 void create(string file, vector<double> x, vector<double> y,int n) 
 { 

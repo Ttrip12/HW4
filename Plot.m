@@ -10,9 +10,9 @@ for i = 3:num_files
    file = Files(i).name;
    data{i-2} = readmatrix(file);
 end
-%% Video
 cd ..
-v = VideoWriter('Borgir.mp4', 'MPEG-4');
+%% Video
+v = VideoWriter('Halp.mp4', 'MPEG-4');
 %v.LosslessCompression = true;
 v.FrameRate = 60;  % arbitrary
 open(v)
@@ -26,7 +26,7 @@ for i=1:num_files - 2
     xlim([0 2*pi])
     xticks([0 pi 2*pi]);
     xticklabels({'0','\pi','2\pi'});
-    ylim([0 3.5])
+   % ylim([0 4])
     xlabel("X")
     ylabel("Velocity")
     data{i}(:,1);
