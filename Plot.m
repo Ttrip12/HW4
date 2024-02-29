@@ -26,7 +26,7 @@ for i=1:num_files - 2
     xlim([0 2*pi])
     xticks([0 pi 2*pi]);
     xticklabels({'0','\pi','2\pi'});
-    %ylim([0 3.5])
+    ylim([0 3.5])
     xlabel("X")
     ylabel("Velocity")
     data{i}(:,1);

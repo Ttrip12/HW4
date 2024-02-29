@@ -63,11 +63,9 @@ int main(){
 		for ( i = 0; i < n + 2*gc; i++) {
 			
 			x[i] = x_low - gc*dx + i*dx + dx/2; 
-			if (i<(n + 2*gc)/2){
-				u[i] = x[i]; 
-			}else{
-				u[i] = -x[i];
-			} 
+			//if (i<(n + 2*gc)/2){
+				u[i] = 0.1*x[i]*x[i]; 
+			//} 
 			
 		}
 		
