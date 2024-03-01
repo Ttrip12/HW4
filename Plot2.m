@@ -21,11 +21,9 @@ cd ..
 % pause(0.2) % let plot wake up
 figure
 hold on
-plot_name = "Spikes!";
+plot_name = "Exponent Into Line: Viscosity = 0.05, cfl = 0.1";
 xlim([0 2*pi])
-xticks([0 pi 2*pi]);
-xticklabels({'0','\pi','2\pi'});
-ylim([0 5])
+xticks([0 pi 2*pi]);xticklabels({'0','\pi','2\pi'});
 xlabel("X")
 ylabel("Velocity")
 title(plot_name)
@@ -33,10 +31,15 @@ for i=1:num_files - 2
     if  i == 1
         plot(data{i}(:,1), data{i}(:,2));
         data{i}(:,1);
-    elseif rem(i,100) == 0
+        Legend_Name(1) = "Initial";
+    elseif rem(i,200) == 0
         plot(data{i}(:,1), data{i}(:,2));
         data{i}(:,1);
+        j = i/200 + 1;
+        name = i*1 + " Iterations";
+        Legend_Name(j) = name;
     end
     
 end
+legend(Legend_Name,'Location','best')
 hold off
