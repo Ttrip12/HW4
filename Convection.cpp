@@ -59,15 +59,15 @@ int main(){
 			
 			x[i] = (x_low - gc*dx + i*dx + dx/2); 
 			
-			u[i] = sin(x[i]*x[i]);
+			// u[i] = sin(x[i]*x[i]);
 			
 			// if (i<(n + 2*gc)/2){
 			// 	u[i] = 0.5*x[i]*x[i]; 
 			// } else u[i] = u[i-1];
 			
-			// if (i<(n + 2*gc)/2){
-			// 	u[i] = x[i]+1; 
-			// } else u[i] = x_high - x[i]+1;
+			if (i<(n + 2*gc)/2){
+				u[i] = x[i]+1; 
+			} else u[i] = x_high - x[i]+1;
 
 			// if (i<(n + 2*gc)/2){
 			// 	u[i] = x[i]; 
