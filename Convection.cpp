@@ -14,7 +14,7 @@ vector<double> DDx(vector<double>, double *, int *,int *,int);
 vector<double> DDxDDx(vector<double>, double *, int *,int *,int);
 vector<double> fill_gc(vector<double>, int,int);
 vector<double> error(vector<double>,vector<double>);
-double find_dt(vector<double>,double,double);
+double find_dt(vector<double>,double,double,double);
 void create(string,vector<double>,vector<double>,int);
 int main(){
 	
@@ -47,7 +47,7 @@ int main(){
 	
 	gc = order/2;		            // Find Number of GC
 	dt = 1.0/n*cfl;                 // Timestep
-	i_max = n*40;                   // Total Number of Iterations
+	i_max = n*10;                   // Total Number of Iterations
 
 	// ***** Define Mesh *****
 	dx = (x_high - x_low)/n;
@@ -57,17 +57,21 @@ int main(){
 		
 		for ( i = 0; i < n + 2*gc; i++) {
 			
-			x[i] = (x_low - gc*dx + i*dx + dx/2)*3.14159; 
+			x[i] = (x_low - gc*dx + i*dx + dx/2); 
 			
-			// u[i] = sin(x[i])+2;
+			u[i] = sin(x[i]*x[i]);
 			
 			// if (i<(n + 2*gc)/2){
 			// 	u[i] = 0.5*x[i]*x[i]; 
 			// } else u[i] = u[i-1];
 			
-			//if (i<(n + 2*gc)/2){
-				u[i] = x[i]; 
-			//} else u[i] = u[((n + 2*gc)/2)-1] - x[n + 2*gc - i];
+			// if (i<(n + 2*gc)/2){
+			// 	u[i] = x[i]+1; 
+			// } else u[i] = x_high - x[i]+1;
+
+			// if (i<(n + 2*gc)/2){
+			// 	u[i] = x[i]; 
+			// } else u[i] = u[((n + 2*gc)/2)-1] - x[n + 2*gc - i];
 
 		}
 		
@@ -94,14 +98,14 @@ int main(){
 					
 				} else if(type == "nonlinear_convective"){
 					
-					dt =  find_dt(u,dx,cfl);
+					dt =  find_dt(u,dx,cfl,nu);
 					for ( i = 0; i < n + 2*gc; i++){
 						unew[i] = u[i] - u[i]*dt*dudx[i];
 						u[i] = unew[i];
 					}
 
 				} else if (type == "burger"){
-					dt =  find_dt(u,dx,cfl);
+					dt =  find_dt(u,dx,cfl,nu);
 					for ( i = 0; i < n + 2*gc; i++){
 						unew[i] = u[i] - dt*u[i]*dudx[i] + dt*nu*d2u_d2x[i];
 						u[i] = unew[i];
@@ -226,11 +230,16 @@ vector<double> error(vector<double> Numer,vector<double> Exact){
 	return error;
 }
 
-double find_dt(vector<double> u,double dx,double cfl) {
+double find_dt(vector<double> u,double dx,double cfl,double nu) {
+	double dt;
+	double u_max = abs(*max_element(u.begin(),u.end()));
+	double dtvelo = dx*cfl/u_max;
+	double dtvisc = (dx*dx*cfl)/nu;
 	
-	double u_max = *max_element(u.begin(),u.end());
-
-	double dt = dx*cfl/u_max;
+	if (dtvisc > dtvelo){
+		dt = dtvelo;
+	}else{ dt = dtvisc;
+	}
 
 	return dt;
 }
